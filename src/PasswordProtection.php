@@ -65,7 +65,7 @@ class PasswordProtection extends Plugin
         self::$settings = $this->getSettings();
 
         // Create Custom Alias
-		Craft::setAlias('@passwordprotection', __DIR__);
+        Craft::setAlias('@passwordprotection', __DIR__);
 
         // Register services
         $this->setComponents([
@@ -99,9 +99,9 @@ class PasswordProtection extends Plugin
     }
 
     /**
-	 * @title: Get Route
-	 * @description: Get the Login Route
-	 **/
+     * @title: Get Route
+     * @description: Get the Login Route
+     **/
     public function getRoute(): string
     {
         return "protected-page/login";
@@ -162,16 +162,16 @@ class PasswordProtection extends Plugin
     private function _registerRoutes()
     {
         Event::on(
-			UrlManager::class,
-			UrlManager::EVENT_REGISTER_CP_URL_RULES,
-			function (RegisterUrlRulesEvent $event) {
-				// Register our Control Panel routes
-				$event->rules = array_merge(
-					$event->rules,
-					$this->customAdminCpRoutes()
-				);
-			}
-		);
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                // Register our Control Panel routes
+                $event->rules = array_merge(
+                    $event->rules,
+                    $this->customAdminCpRoutes()
+                );
+            }
+        );
     }
 
     /**
@@ -180,28 +180,28 @@ class PasswordProtection extends Plugin
     private function _registerTemplates()
     {
         Event::on(
-			View::class,
-			View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
-			function (RegisterTemplateRootsEvent $e) {
-				if (
-					is_dir(
-						$baseDir =
-							$this->getBasePath() .
-							DIRECTORY_SEPARATOR .
-							"templates"
-					)
-				) {
-					$e->roots[$this->id] = $baseDir;
-				}
-			}
-		);
+            View::class,
+            View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
+            function (RegisterTemplateRootsEvent $e) {
+                if (
+                    is_dir(
+                        $baseDir =
+                            $this->getBasePath() .
+                            DIRECTORY_SEPARATOR .
+                            "templates"
+                    )
+                ) {
+                    $e->roots[$this->id] = $baseDir;
+                }
+            }
+        );
     }
 
     /**
-	 * Registers Permissions
-	 */
-	private function _registerPermissions(): void
-	{
+     * Registers Permissions
+     */
+    private function _registerPermissions(): void
+    {
         Event::on(
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
@@ -236,25 +236,32 @@ class PasswordProtection extends Plugin
     }
 
     /**
-	 * Registers sidebar meta box
-	 */
-	private function _registerSidebar(): void
-	{
-		Event::on(
+     * Registers sidebar meta box
+     */
+    private function _registerSidebar(): void
+    {
+        Event::on(
             Element::class,
             Element::EVENT_DEFINE_SIDEBAR_HTML,
             function (DefineHtmlEvent $event)
         {
-			/** @var Element $element */
-			$element = $event->sender;
+            /** @var Element $element */
+            $element = $event->sender;
 
-			// We only support entries
-			if (!$element instanceof Entry) {
-				return;
-			}
+            // We only support entries
+            if (!$element instanceof Entry) {
+                return;
+            }
 
             // Exclude sections which are selected in the settings
             $included = self::$settings->includedSections;
+
+            $sectionId = $element->section->id ?? null;
+
+            if (!$sectionId) {
+                return;
+            }
+
             if (!in_array($element->section->id, $included, true))
             {
                 return;
@@ -271,19 +278,19 @@ class PasswordProtection extends Plugin
 
                 // Add Password Block
                 $html = "";
-			    $html .= Craft::$app->view->renderTemplate(
-				    "passwordprotection/_sidebar/password",
+                $html .= Craft::$app->view->renderTemplate(
+                    "passwordprotection/_sidebar/password",
                     [
                         "password" => $password,
                         "readonly" => $currentUser->can("passwordprotection:section-{$element->section->id}:edit") ? false : true,
                     ]
-			    );
-			    $html .= $event->html;
-			    $event->html = $html;
+                );
+                $html .= $event->html;
+                $event->html = $html;
 
             }
-		});
-	}
+        });
+    }
 
     /**
      * Save the password after entry save
@@ -301,9 +308,9 @@ class PasswordProtection extends Plugin
             $requestType = Craft::$app->getRequest()->getIsCpRequest();
 
             // We only support entries and only from CP
-			if (!$element instanceof Entry || !$requestType) {
-				return;
-			}
+            if (!$element instanceof Entry || !$requestType) {
+                return;
+            }
 
             $id = Craft::$app->getRequest()->getBodyParam("elementId");
             $password = Craft::$app->getRequest()->getBodyParam("entry-password");
@@ -338,39 +345,39 @@ class PasswordProtection extends Plugin
     }
 
     // Protected Methods
-	// =========================================================================
+    // =========================================================================
 
-	/**
-	 * @inheritdoc
-	 */
-	protected function createSettingsModel(): ?Model
-	{
-		return new Settings();
-	}
+    /**
+     * @inheritdoc
+     */
+    protected function createSettingsModel(): ?Model
+    {
+        return new Settings();
+    }
 
-	protected function settingsHtml(): string
-	{
-		return Craft::$app
-			->getView()
-			->renderTemplate("passwordprotection/settings", [
-				"settings" => $this->getSettings(),
-			]);
-	}
+    protected function settingsHtml(): string
+    {
+        return Craft::$app
+            ->getView()
+            ->renderTemplate("passwordprotection/settings", [
+                "settings" => $this->getSettings(),
+            ]);
+    }
 
-	protected function customAdminCpRoutes(): array
-	{
+    protected function customAdminCpRoutes(): array
+    {
         return [
-			"passwordprotection" => [
-				"template" => "passwordprotection/settings",
-			],
-			"passwordprotection/settings" =>
-				"passwordprotection/settings/plugin-settings",
-			'passwordprotection/settings/<subSection:{handle}>' =>
+            "passwordprotection" => [
+                "template" => "passwordprotection/settings",
+            ],
+            "passwordprotection/settings" =>
+                "passwordprotection/settings/plugin-settings",
+            'passwordprotection/settings/<subSection:{handle}>' =>
                 "passwordprotection/settings/plugin-settings",
             $this->getRoute() =>
                 "password/sessions/create"
-		];
-	}
+        ];
+    }
 
 
 }
