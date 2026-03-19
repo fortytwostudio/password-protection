@@ -55,6 +55,8 @@ class ContentController extends Controller
             )->execute();
         }
 
+		Craft::$app->cache->delete('password-content');
+
         Craft::$app->getSession()->setNotice('Content saved.');
 
         return $this->redirectToPostedUrl();
