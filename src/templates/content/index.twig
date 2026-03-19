@@ -1,0 +1,23 @@
+{% extends "passwordprotection/_layouts/content" %}
+{% import "_includes/forms" as forms %}
+
+{% set fullPageForm = true %}
+
+{% block content %}
+    {{ actionInput('passwordprotection/content/save') }}
+    {{ redirectInput('password-protection/content') }}
+
+    {{ forms.textField({
+        label: "Heading"|t("passwordprotection"),
+        id: "passwordHeading",
+        name: "passwordHeading",
+        value: contentRow.heading ?? '',
+    }) }}
+
+    {{ forms.textAreaField({
+        label: "Content"|t("passwordprotection"),
+        id: "passwordContent",
+        name: "passwordContent",
+        value: contentRow.content ?? '',
+    }) }}
+{% endblock %}

@@ -26,4 +26,9 @@ class PasswordVariables
 
         return $protected;
     }
+
+	public function getContent(): ?array
+    {
+        return PasswordProtection::getInstance()->contentService->getContent();
+    }
 }
