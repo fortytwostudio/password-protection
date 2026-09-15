@@ -48,6 +48,23 @@ class Install extends Migration
             $this->createIndex(null, LoginAttempt::tableName(), 'ipAddress');
         }
 
+		$this->createTable('{{%forty_password_content}}', [
+			'id' => $this->primaryKey(),
+			'heading' => $this->text(),
+			'content' => $this->text(),
+			'dateCreated' => $this->dateTime()->notNull(),
+			'dateUpdated' => $this->dateTime()->notNull(),
+			'uid' => $this->uid(),
+		]);
+
+		$this->insert('{{%forty_password_content}}', [
+			'heading' => 'Protected Page',
+			'content' => "",
+			'dateCreated' => new \yii\db\Expression('NOW()'),
+			'dateUpdated' => new \yii\db\Expression('NOW()'),
+			'uid' => \craft\helpers\StringHelper::UUID(),
+		]);
+
         return true;
     }
 
