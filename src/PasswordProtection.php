@@ -146,7 +146,7 @@ class PasswordProtection extends Plugin
 		if ($editableSettings) {
 			$item["subnav"]["settings"] = [
 				"label" => "Settings",
-				"url" => "password-protection/settings",
+				"url" => "passwordprotection/settings/system",
 			];
 		}
 
